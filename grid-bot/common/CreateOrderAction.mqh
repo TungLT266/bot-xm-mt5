@@ -8,12 +8,17 @@ extern int gridSellLimitInput;
 extern int gridBuyLimitInput;
 extern int gridSellTopInput;
 
+extern int gridBuyTopNotTP;
+extern int gridSellTopNotTP;
+
 extern double gridSLInput;
 extern double volumeInput;
 extern double gridAmountInput;
 
 extern int gridTotalGlobal;
 extern double gridStartGlobal;
+extern bool isCreateBuyTopGlobal;
+extern bool isCreateSellTopGlobal;
 
 string typeBuyStr = "BUY";
 string typeSellStr = "SELL";
@@ -35,18 +40,14 @@ void CreateOrderAction() {
       }
    }
    
-   if (gridSellTopInput > 0) {
-      int start = 1;
-      int end = start + gridSellTopInput - 1;
-      for (int i = start; i <= end; i++) {
+   if (isCreateSellTopGlobal && gridSellTopInput > 0) {
+      for (int i = GetStartGridSellTop(); i <= GetEndGridSellTop(); i++) {
          createOrder(i, typeSellStr);
       }
    }
    
-   if (gridBuyTopInput > 0) {
-      int start = gridSellTopInput + gridBuyLimitInput + gridSellLimitInput + 1;
-      int end = start + gridBuyTopInput - 1;
-      for (int i = start; i <= end; i++) {
+   if (isCreateBuyTopGlobal && gridBuyTopInput > 0) {
+      for (int i = GetStartGridBuyTop(); i <= GetEndGridBuyTop(); i++) {
          createOrder(i, typeBuyStr);
       }
    }
@@ -75,6 +76,23 @@ bool isExistGridNumber(int gridNumber) {
       }
    }
    return false;
+}
+
+bool isGridHasTP (int gridNumber) {
+   if (gridBuyTopNotTP > 0) {
+      int endBuy = GetEndGridBuyTop();
+      if (gridNumber > (endBuy - gridBuyTopNotTP) && gridNumber <= endBuy) {
+         return false;
+      }
+   }
+   
+   if (gridSellTopNotTP > 0) {
+      int startSell = GetStartGridSellTop();
+      if (gridNumber >= startSell && gridNumber < (startSell + gridSellTopNotTP)) {
+         return false;
+      }
+   }
+   return true;
 }
 
 void createOrder(int gridNumber, string typeStr) {
@@ -120,7 +138,9 @@ void createOrder(int gridNumber, string typeStr) {
    if (gridSLInput > 0) {
       request.sl = sl;
    }
-   request.tp = tp;
+   if (isGridHasTP(gridNumber)) {
+      request.tp = tp;
+   }
    request.comment = "Grid No." + IntegerToString(gridNumber);
    
    if (OrderSend(request, result)) {
