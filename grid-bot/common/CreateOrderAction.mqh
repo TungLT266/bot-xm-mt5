@@ -3,8 +3,11 @@
 
 #include <C:\Users\admin\AppData\Roaming\MetaQuotes\Terminal\BB16F565FAAA6B23A20C26C49416FF05\MQL5\Experts\bot-xm-mt5\grid-bot\common\CommonFunction.mqh>
 
-extern int gridBuyNumberInput;
-extern int gridSellNumberInput;
+extern int gridBuyTopInput;
+extern int gridSellLimitInput;
+extern int gridBuyLimitInput;
+extern int gridSellTopInput;
+
 extern double gridSLInput;
 extern double volumeInput;
 extern double gridAmountInput;
@@ -16,15 +19,35 @@ string typeBuyStr = "BUY";
 string typeSellStr = "SELL";
 
 void CreateOrderAction() {
-   for (int i = 1; i <= gridBuyNumberInput; i++) {
-      if (!isExistGridNumber(i)) {
+   if (gridBuyLimitInput > 0) {
+      int start = gridSellTopInput + 1;
+      int end = start + gridBuyLimitInput - 1;
+      for (int i = start; i <= end; i++) {
          createOrder(i, typeBuyStr);
       }
    }
    
-   for (int i = (gridBuyNumberInput + 1); i <= gridTotalGlobal; i++) {
-      if (!isExistGridNumber(i)) {
+   if (gridSellLimitInput > 0) {
+      int start = gridSellTopInput + gridBuyLimitInput + 1;
+      int end = start + gridSellLimitInput - 1;
+      for (int i = start; i <= end; i++) {
          createOrder(i, typeSellStr);
+      }
+   }
+   
+   if (gridSellTopInput > 0) {
+      int start = 1;
+      int end = start + gridSellTopInput - 1;
+      for (int i = start; i <= end; i++) {
+         createOrder(i, typeSellStr);
+      }
+   }
+   
+   if (gridBuyTopInput > 0) {
+      int start = gridSellTopInput + gridBuyLimitInput + gridSellLimitInput + 1;
+      int end = start + gridBuyTopInput - 1;
+      for (int i = start; i <= end; i++) {
+         createOrder(i, typeBuyStr);
       }
    }
 }
@@ -55,6 +78,11 @@ bool isExistGridNumber(int gridNumber) {
 }
 
 void createOrder(int gridNumber, string typeStr) {
+   if (isExistGridNumber(gridNumber)) {
+      //Print("Grid has exits: ", gridNumber);
+      return;
+   }
+
    double bidPrice = SymbolInfoDouble(_Symbol, SYMBOL_BID);
    double askPrice = SymbolInfoDouble(_Symbol, SYMBOL_ASK);
    double price = GetPriceByGridNumber(gridNumber);
@@ -100,4 +128,5 @@ void createOrder(int gridNumber, string typeStr) {
    } else {
       Print("Create Order Error: Type: ", EnumToString(type), " - Comment: ", result.comment, " - Grid Number: ", gridNumber, " - Price: ", price, " - SL: ", sl, " - TP: ", tp);
    }
+   //Sleep(5000);
 }
