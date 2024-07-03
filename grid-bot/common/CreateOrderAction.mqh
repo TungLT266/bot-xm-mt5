@@ -8,8 +8,8 @@ extern int gridSellLimitInput;
 extern int gridBuyLimitInput;
 extern int gridSellTopInput;
 
-extern int gridBuyTopNotTP;
-extern int gridSellTopNotTP;
+extern int gridBuyTopNotTPInput;
+extern int gridSellTopNotTPInput;
 
 extern double gridSLInput;
 extern double volumeInput;
@@ -79,16 +79,16 @@ bool isExistGridNumber(int gridNumber) {
 }
 
 bool isGridHasTP (int gridNumber) {
-   if (gridBuyTopNotTP > 0) {
+   if (gridBuyTopNotTPInput > 0) {
       int endBuy = GetEndGridBuyTop();
-      if (gridNumber > (endBuy - gridBuyTopNotTP) && gridNumber <= endBuy) {
+      if (gridNumber > (endBuy - gridBuyTopNotTPInput) && gridNumber <= endBuy) {
          return false;
       }
    }
    
-   if (gridSellTopNotTP > 0) {
+   if (gridSellTopNotTPInput > 0) {
       int startSell = GetStartGridSellTop();
-      if (gridNumber >= startSell && gridNumber < (startSell + gridSellTopNotTP)) {
+      if (gridNumber >= startSell && gridNumber < (startSell + gridSellTopNotTPInput)) {
          return false;
       }
    }
@@ -148,5 +148,5 @@ void createOrder(int gridNumber, string typeStr) {
    } else {
       Print("Create Order Error: Type: ", EnumToString(type), " - Comment: ", result.comment, " - Grid Number: ", gridNumber, " - Price: ", price, " - SL: ", sl, " - TP: ", tp);
    }
-   //Sleep(5000);
+   Sleep(1000);
 }
