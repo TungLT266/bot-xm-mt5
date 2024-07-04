@@ -89,7 +89,12 @@ void createOrder(int gridNo) {
    
    double bidPrice = SymbolInfoDouble(_Symbol, SYMBOL_BID);
    double askPrice = SymbolInfoDouble(_Symbol, SYMBOL_ASK);
-   if (price >= (bidPrice - (gridAmountInput / 2)) && price <= (askPrice + (gridAmountInput / 2))) {
+   if (type == ORDER_TYPE_SELL_LIMIT || type == ORDER_TYPE_BUY_LIMIT) {
+      if (price >= bidPrice && price <= askPrice) {
+         Print("Create order failure.");
+         return;
+      }
+   } else if (price >= (bidPrice - (gridAmountInput / 2)) && price <= (askPrice + (gridAmountInput / 2))) {
       Print("Create order failure.");
       return;
    }
