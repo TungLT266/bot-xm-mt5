@@ -13,7 +13,7 @@ void CreateOrderAction() {
    }
 }
 
-bool isExistGridNumber(int gridNumber) {
+bool isExistGridNumber(int gridNumber, ENUM_ORDER_TYPE type) {
    double price = GetPriceByGridNumber(gridNumber);
    double minPrice = price - (gridAmountInput / 2);
    double maxPrice = price + (gridAmountInput / 2);
@@ -38,24 +38,38 @@ bool isExistGridNumber(int gridNumber) {
    return false;
 }
 
-void createOrder(int gridNumber) {
-   if (isExistGridNumber(gridNumber)) {
-      return;
-   }
-
-   double bidPrice = SymbolInfoDouble(_Symbol, SYMBOL_BID);
-   double askPrice = SymbolInfoDouble(_Symbol, SYMBOL_ASK);
-   double price = GetPriceByGridNumber(gridNumber);
+void createOrder(int gridNo) {
+   double price = GetPriceByGridNumber(gridNo);
    double tp;
    ENUM_ORDER_TYPE type;
    
-   if (price < bidPrice) {
-      tp = price - gridAmountInput;
-      type = ORDER_TYPE_SELL_STOP;
-   } else if (price > askPrice) {
-      tp = price + gridAmountInput;
+   if (gridNo > (gridTotalInput / 2)) {
       type = ORDER_TYPE_BUY_STOP;
+      tp = price + gridAmountInput;
+      if (differenceBuyAndSellGlobal > 0) {
+         if (gridNo <= (gridTotalInput / 2) + differenceBuyAndSellGlobal) {
+            type = ORDER_TYPE_SELL_LIMIT;
+            tp = price - gridAmountInput;
+         }
+      }
    } else {
+      type = ORDER_TYPE_SELL_STOP;
+      tp = price - gridAmountInput;
+      if (differenceBuyAndSellGlobal < 0) {
+         if (gridNo > (gridTotalInput / 2) + differenceBuyAndSellGlobal) {
+            type = ORDER_TYPE_BUY_LIMIT;
+            tp = price + gridAmountInput;
+         }
+      }
+   }
+   
+   if (isExistGridNumber(gridNo, type)) {
+      return;
+   }
+   
+   double bidPrice = SymbolInfoDouble(_Symbol, SYMBOL_BID);
+   double askPrice = SymbolInfoDouble(_Symbol, SYMBOL_ASK);
+   if (price >= bidPrice && price <= askPrice) {
       Print("Create order failure.");
       return;
    }
@@ -70,12 +84,12 @@ void createOrder(int gridNumber) {
    request.type = type;
    request.price = price;
    request.tp = tp;
-   request.comment = "Grid No." + IntegerToString(gridNumber);
+   request.comment = GetCommentByGridNo(gridNo);
    
    if (OrderSend(request, result)) {
-      Print("Create order success: Type: ", EnumToString(type), " - Ticket: ", result.order, " - Grid Number: ", gridNumber, " - Price: ", price, " - TP: ", tp);
+      Print("Create order success: Type: ", EnumToString(type), " - Ticket: ", result.order, " - Grid No: ", gridNo, " - Price: ", price, " - TP: ", tp);
    } else {
-      Print("Create order failure: Type: ", EnumToString(type), " - Comment: ", result.comment, " - Grid Number: ", gridNumber, " - Price: ", price, " - TP: ", tp);
+      Print("Create order failure: Type: ", EnumToString(type), " - Comment: ", result.comment, " - Grid No: ", gridNo, " - Price: ", price, " - TP: ", tp);
    }
    Sleep(1000);
 }
