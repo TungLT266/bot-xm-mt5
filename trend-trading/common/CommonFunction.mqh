@@ -16,12 +16,23 @@ double GetNumberStartGrid(double bidPrice) {
    return MathFloor(bidPrice / gridAmountInput) + 1 - (gridTotalInput / 2);
 }
 
-string GetCommentByGridNo(double gridNo) {
+string GetCommentByGridNo(double gridNo, ENUM_ORDER_TYPE type) {
+   string prefix = "";
+   if (type == ORDER_TYPE_BUY_STOP) {
+      prefix = "BT";
+   } else if (type == ORDER_TYPE_SELL_LIMIT) {
+      prefix = "SL";
+   } else if (type == ORDER_TYPE_SELL_STOP) {
+      prefix = "ST";
+   } else {
+      prefix = "BL";
+   }
+   
    string str = StringFormat("%.0f", (gridNo + numberStartGridGlobal));
    if (StringLen(str) >= 4) {
-      return StringSubstr(str, StringLen(str) - 3) + "." + StringSubstr(str, 0, StringLen(str) - 3) + ".No." + StringFormat("%.0f", gridNo);
+      return prefix + "." + StringSubstr(str, StringLen(str) - 3) + "." + StringSubstr(str, 0, StringLen(str) - 3) + ".No." + StringFormat("%.0f", gridNo);
    }
-   return str + ".No." + StringFormat("%.0f", gridNo);
+   return prefix + "." + str + ".No." + StringFormat("%.0f", gridNo);
 }
 
 int GetTotalPositionBuy() {

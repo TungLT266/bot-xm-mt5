@@ -2,6 +2,7 @@
 #property link      "https://www.mql5.com"
 
 #include <C:\Users\admin\AppData\Roaming\MetaQuotes\Terminal\BB16F565FAAA6B23A20C26C49416FF05\MQL5\Experts\bot-xm-mt5\trend-trading\common\CommonFunction.mqh>
+#include <C:\Users\admin\AppData\Roaming\MetaQuotes\Terminal\BB16F565FAAA6B23A20C26C49416FF05\MQL5\Experts\bot-xm-mt5\trend-trading\common\RemoveOrderAction.mqh>
 
 extern int gridTotalInput;
 extern double volumeInput;
@@ -23,7 +24,13 @@ bool isExistGridNumber(int gridNumber, ENUM_ORDER_TYPE type) {
       ulong orderTicket = OrderGetTicket(i);
       double orderPrice = OrderGetDouble(ORDER_PRICE_OPEN);
       if (orderPrice > minPrice && orderPrice < maxPrice) {
-         return true;
+         ENUM_ORDER_TYPE orderType = (ENUM_ORDER_TYPE) OrderGetInteger(ORDER_TYPE);
+         if (orderType == type) {
+            return true;
+         } else {
+            RemoveOrderByTicket(orderTicket);
+            totalOrder--;
+         }
       }
    }
    
@@ -84,7 +91,7 @@ void createOrder(int gridNo) {
    request.type = type;
    request.price = price;
    request.tp = tp;
-   request.comment = GetCommentByGridNo(gridNo);
+   request.comment = GetCommentByGridNo(gridNo, type);
    
    if (OrderSend(request, result)) {
       Print("Create order success: Type: ", EnumToString(type), " - Ticket: ", result.order, " - Grid No: ", gridNo, " - Price: ", price, " - TP: ", tp);
