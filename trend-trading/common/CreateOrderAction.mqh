@@ -9,7 +9,20 @@ extern double volumeInput;
 extern double gridAmountInput;
 
 void CreateOrderAction() {
-   for (int i = 1; i <= gridTotalInput; i++) {
+   int start = 1;
+   int end = gridTotalInput;
+   
+   if (PositionsTotal() > limitPositionInput) {
+      if (differenceBuyAndSellGlobal > 0) {
+         end = gridTotalInput / 2;
+      } else if (differenceBuyAndSellGlobal < 0) {
+         start = (gridTotalInput / 2) + 1;
+      } else {
+         return;
+      }
+   }
+   
+   for (int i = start; i <= end; i++) {
       createOrder(i);
    }
 }
@@ -76,7 +89,7 @@ void createOrder(int gridNo) {
    
    double bidPrice = SymbolInfoDouble(_Symbol, SYMBOL_BID);
    double askPrice = SymbolInfoDouble(_Symbol, SYMBOL_ASK);
-   if (price >= bidPrice && price <= askPrice) {
+   if (price >= (bidPrice - (gridAmountInput / 2)) && price <= (askPrice + (gridAmountInput / 2))) {
       Print("Create order failure.");
       return;
    }

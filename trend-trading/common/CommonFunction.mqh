@@ -12,8 +12,8 @@ double GetPriceByGridNumber(double gridNo) {
    return priceStartGridGlobal + ((gridNo - 1) * gridAmountInput);
 }
 
-double GetNumberStartGrid(double bidPrice) {
-   return MathFloor(bidPrice / gridAmountInput) + 1 - (gridTotalInput / 2);
+double GetNumberStartGrid(double price) {
+   return MathFloor(price / gridAmountInput) + 1 - (gridTotalInput / 2);
 }
 
 string GetCommentByGridNo(double gridNo, ENUM_ORDER_TYPE type) {

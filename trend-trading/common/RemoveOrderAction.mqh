@@ -5,12 +5,24 @@
 
 extern double gridAmountInput;
 extern int gridTotalInput;
+extern int limitPositionInput;
 
 extern double priceStartGridGlobal;
 
 void RemoveOrderAction() {
    double minGrid = priceStartGridGlobal - (gridAmountInput / 2);
    double maxGrid = GetPriceByGridNumber(gridTotalInput) + (gridAmountInput / 2);
+   
+   if (PositionsTotal() > limitPositionInput) {
+      if (differenceBuyAndSellGlobal > 0) {
+         maxGrid = GetPriceByGridNumber(gridTotalInput / 2) + (gridAmountInput / 2);
+      } else if (differenceBuyAndSellGlobal < 0) {
+         minGrid = GetPriceByGridNumber((gridTotalInput / 2) + 1) - (gridAmountInput / 2);
+      } else {
+         RemoveOrderAll();
+         return;
+      }
+   }
 
    int total = OrdersTotal();
    for (int i = 0; i < total; i++) {
@@ -18,8 +30,16 @@ void RemoveOrderAction() {
       double orderPrice = OrderGetDouble(ORDER_PRICE_OPEN);
       if (orderPrice < minGrid || orderPrice > maxGrid) {
          RemoveOrderByTicket(orderTicket);
-         return;
+         total--;
       }
+   }
+}
+
+void RemoveOrderAll() {
+   int total = OrdersTotal();
+   for (int i = 0; i < total; i++) {
+      ulong orderTicket = OrderGetTicket(0);
+      RemoveOrderByTicket(orderTicket);
    }
 }
 
