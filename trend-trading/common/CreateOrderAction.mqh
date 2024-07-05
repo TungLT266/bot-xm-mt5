@@ -67,7 +67,7 @@ void createOrder(int gridNo) {
       type = ORDER_TYPE_BUY_STOP;
       tp = price + gridAmountInput;
       if (differenceBuyAndSellGlobal > 0) {
-         if (gridNo <= (gridTotalInput / 2) + differenceBuyAndSellGlobal) {
+         if (gridNo <= (gridTotalInput / 2) + differenceBuyAndSellGlobal + 1) {
             type = ORDER_TYPE_SELL_LIMIT;
             tp = price - gridAmountInput;
          }
@@ -76,7 +76,7 @@ void createOrder(int gridNo) {
       type = ORDER_TYPE_SELL_STOP;
       tp = price - gridAmountInput;
       if (differenceBuyAndSellGlobal < 0) {
-         if (gridNo > (gridTotalInput / 2) + differenceBuyAndSellGlobal) {
+         if (gridNo > (gridTotalInput / 2) + differenceBuyAndSellGlobal - 1) {
             type = ORDER_TYPE_BUY_LIMIT;
             tp = price + gridAmountInput;
          }
