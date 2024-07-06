@@ -78,11 +78,11 @@ void ClearTP(ulong positionBuyLowestTicket, ulong positionSellHighestTicket)
          double tpNew = 0;
          if (positionTicket == positionBuyLowestTicket)
          {
-            tpNew = price + gridPointAmountInput;
+            tpNew = price + (gridPointAmountInput * _Point);
          }
          else if (positionTicket == positionSellHighestTicket)
          {
-            tpNew = price - gridPointAmountInput;
+            tpNew = price - (gridPointAmountInput * _Point);
          }
          if (tpNew != PositionGetDouble(POSITION_TP))
          {
