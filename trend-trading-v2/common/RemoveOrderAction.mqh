@@ -27,6 +27,7 @@ void RemoveOrderAction()
       if (magic == magicNumberInput)
       {
          string comment = OrderGetString(ORDER_COMMENT);
+         double price = OrderGetDouble(ORDER_PRICE_OPEN);
          if (comment != commentUp && comment != commentDown)
          {
             Print("Remove order: ", comment, " - Up: ", commentUp, " - Down: ", commentDown);

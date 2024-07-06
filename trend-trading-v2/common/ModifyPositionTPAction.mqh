@@ -6,6 +6,8 @@
 extern int gridPointAmountInput;
 
 extern int differenceBuyAndSellPositionGlobal;
+extern double tpBuyGlobal;
+extern double tpSellGlobal;
 
 void ModifyPositionTPAction()
 {
@@ -116,20 +118,23 @@ void ClosePosition(ulong ticket)
 
 void ModifyPositionTP(ulong ticket, double tpNew, ENUM_POSITION_TYPE positionType)
 {
-   if (positionType == POSITION_TYPE_BUY)
+   if (tpNew > 0)
    {
-      if (tpNew <= SymbolInfoDouble(_Symbol, SYMBOL_BID))
+      if (positionType == POSITION_TYPE_BUY)
       {
-         ClosePosition(ticket);
-         return;
+         if (tpNew <= SymbolInfoDouble(_Symbol, SYMBOL_BID))
+         {
+            ClosePosition(ticket);
+            return;
+         }
       }
-   }
-   else
-   {
-      if (tpNew >= SymbolInfoDouble(_Symbol, SYMBOL_ASK))
+      else
       {
-         ClosePosition(ticket);
-         return;
+         if (tpNew >= SymbolInfoDouble(_Symbol, SYMBOL_ASK))
+         {
+            ClosePosition(ticket);
+            return;
+         }
       }
    }
 
@@ -146,6 +151,17 @@ void ModifyPositionTP(ulong ticket, double tpNew, ENUM_POSITION_TYPE positionTyp
    if (OrderSend(request, result))
    {
       Print("Modify Position TP success: Ticket: ", ticket, " - TP: ", tpNew);
+      if (tpNew > 0)
+      {
+         if (positionType == POSITION_TYPE_BUY)
+         {
+            tpBuyGlobal = tpNew;
+         }
+         else
+         {
+            tpSellGlobal = tpNew;
+         }
+      }
    }
    else
    {
