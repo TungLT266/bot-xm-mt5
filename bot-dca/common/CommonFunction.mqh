@@ -2,12 +2,41 @@
 #property link "https://www.mql5.com"
 
 extern ulong magicNumberInput;
-extern bool isTradeBuyFirstInput;
 extern double slAmountInput;
 extern int tpNumberInput;
 
 extern double priceStartGlobal;
 extern bool isTakeProfitBuyGlobal;
+extern bool isTradeBuyFirstGlobal;
+
+extern string BUY_TYPE_CONSTANT;
+extern string SELL_TYPE_CONSTANT;
+
+double GetPriceByTypeOrder(string type)
+{
+    if (type == BUY_TYPE_CONSTANT)
+    {
+        if (isTradeBuyFirstGlobal)
+        {
+            return priceStartGlobal;
+        }
+        else
+        {
+            return priceStartGlobal + slAmountInput;
+        }
+    }
+    else
+    {
+        if (isTradeBuyFirstGlobal)
+        {
+            return priceStartGlobal - slAmountInput;
+        }
+        else
+        {
+            return priceStartGlobal;
+        }
+    }
+}
 
 int GetTotalPosition()
 {
@@ -25,10 +54,26 @@ int GetTotalPosition()
     return result;
 }
 
+int GetTotalOrder()
+{
+    int result = 0;
+    int totalOrder = OrdersTotal();
+    for (int i = 0; i < totalOrder; i++)
+    {
+        ulong ticket = OrderGetTicket(i);
+        ulong magic = PositionGetInteger(POSITION_MAGIC);
+        if (magic == magicNumberInput)
+        {
+            result++;
+        }
+    }
+    return result;
+}
+
 double GetSL()
 {
     double sl;
-    if (isTradeBuyFirstInput)
+    if (isTradeBuyFirstGlobal)
     {
         if (isTakeProfitBuyGlobal)
         {
@@ -56,7 +101,7 @@ double GetSL()
 double GetTP()
 {
     double tp;
-    if (isTradeBuyFirstInput)
+    if (isTradeBuyFirstGlobal)
     {
         if (isTakeProfitBuyGlobal)
         {
