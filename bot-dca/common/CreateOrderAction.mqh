@@ -21,6 +21,7 @@ void CreateOrderAction()
    if (totalPosition == 0)
    {
       CreateOrderFirst();
+      return;
    }
    CreateOrderAfterFirst();
 }
