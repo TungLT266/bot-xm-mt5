@@ -100,28 +100,28 @@ double GetSL()
 
 double GetTP()
 {
-    double tp;
     if (isTradeBuyFirstGlobal)
     {
-        if (isTakeProfitBuyGlobal)
+        if (GetTotalPosition() == 1)
         {
-            tp = priceStartGlobal + (slAmountInput * tpNumberInput);
+            return priceStartGlobal + slAmountInput;
         }
-        else
+        else if (isTakeProfitBuyGlobal)
         {
-            tp = priceStartGlobal - (slAmountInput * (tpNumberInput + 1));
+            return priceStartGlobal + (slAmountInput * tpNumberInput);
         }
+        return priceStartGlobal - (slAmountInput * (tpNumberInput + 1));
     }
     else
     {
-        if (isTakeProfitBuyGlobal)
+        if (GetTotalPosition() == 1)
         {
-            tp = priceStartGlobal + (slAmountInput * (tpNumberInput + 1));
+            return priceStartGlobal - slAmountInput;
         }
-        else
+        else if (isTakeProfitBuyGlobal)
         {
-            tp = priceStartGlobal - (slAmountInput * tpNumberInput);
+            return priceStartGlobal + (slAmountInput * (tpNumberInput + 1));
         }
+        return priceStartGlobal - (slAmountInput * tpNumberInput);
     }
-    return tp;
 }

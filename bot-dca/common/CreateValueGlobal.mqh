@@ -3,10 +3,16 @@
 
 #include <C:/Users/admin/AppData/Roaming/MetaQuotes/Terminal/BB16F565FAAA6B23A20C26C49416FF05/MQL5/Experts/bot-xm-mt5/bot-dca/common/CommonFunction.mqh>
 
-extern bool isTradeBuyFirstGlobal;
+extern bool isTradeBuyFirstInput;
 
-double GetPriceStart()
+extern bool isTradeBuyFirstGlobal;
+extern double priceStartGlobal;
+
+void SetPriceStartAndIsTradeBuyFirst()
 {
+   double priceStartNew = 0;
+   bool isTradeBuyFirstNew = isTradeBuyFirstInput;
+
    int totalPosition = GetTotalPosition();
    for (int i = 0; i < totalPosition; i++)
    {
@@ -17,11 +23,37 @@ double GetPriceStart()
          string comment = PositionGetString(POSITION_COMMENT);
          if (StringToInteger(comment) == 1)
          {
-            return PositionGetDouble(POSITION_PRICE_OPEN);
+            priceStartNew = PositionGetDouble(POSITION_PRICE_OPEN);
+            if ((ENUM_POSITION_TYPE)PositionGetInteger(POSITION_TYPE) == POSITION_TYPE_BUY)
+            {
+               isTradeBuyFirstNew = true;
+            }
+            else
+            {
+               isTradeBuyFirstNew = false;
+            }
          }
       }
    }
-   return 0;
+
+   if (priceStartNew > 0 && priceStartNew != priceStartGlobal)
+   {
+      priceStartGlobal = priceStartNew;
+      Print("Price Start: ", priceStartGlobal);
+   }
+
+   if (isTradeBuyFirstNew != isTradeBuyFirstGlobal)
+   {
+      isTradeBuyFirstGlobal = priceStartNew;
+      if (isTradeBuyFirstGlobal)
+      {
+         Print("Trade Buy First.");
+      }
+      else
+      {
+         Print("Trade Sell First.");
+      }
+   }
 }
 
 bool GetIsTakeProfitBuy()

@@ -32,7 +32,7 @@ void TakeProfitAction()
 void CloseAllPosition()
 {
    int totalPosition = PositionsTotal();
-   for (int i = 0; i < totalPosition; i++)
+   for (int i = totalPosition - 1; i >= 0; i--)
    {
       ulong positionTicket = PositionGetTicket(i);
       ulong magic = PositionGetInteger(POSITION_MAGIC);
