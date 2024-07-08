@@ -106,11 +106,11 @@ void CreateOrder(int gridNo, string type)
 
    if (OrderSend(request, result))
    {
-      Print("Create order success: Type: ", EnumToString(orderType), " - Ticket: ", result.order, " - No: 1");
+      Print("Create order success: Type: ", EnumToString(orderType), " - Ticket: ", result.order, " - No: ", gridNo);
    }
    else
    {
-      Print("Create order failure: Type: ", EnumToString(orderType), " - Comment: ", result.comment, " - No: 1");
+      Print("Create order failure: Type: ", EnumToString(orderType), " - Comment: ", result.comment, " - No: ", gridNo);
    }
 }
 
